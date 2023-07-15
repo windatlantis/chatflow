@@ -291,6 +291,7 @@ async function send (params:any, bot:Wechaty) {
     } else {
       msg = contactCard
     }
+    return msg
 
   } else if (params.messageType === 'Attachment') {
     /* {

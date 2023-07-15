@@ -214,3 +214,12 @@ atorber/wechat-openai-qa-bot:latest
 - [vue-im](https://github.com/polk6/vue-im)
 
   由@polk6开源的客服web项目，实现客服后台回复咨询消息
+
+### 本地debug
+1. 安装typescript、ts-node, 配置tsconfig.json、package.json
+   参考：
+   https://juejin.cn/post/7105400379633844260
+   https://code.visualstudio.com/docs/typescript/typescript-debugging
+   https://typestrong.org/ts-node/docs/usage
+2. 执行前先通过tsc -b编译生成dict(中间有些代码检查，可以设置tsconfig.json跳过)
+3. 配置launch.json就可以在vscode上跑了

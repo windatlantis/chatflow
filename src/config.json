@@ -1,7 +1,7 @@
 {
     "baseConfig": {
         "VIKA_TOKEN": "",
-        "VIKA_SPACENAME": "",
+        "VIKA_SPACENAME": "test",
         "puppetName": "wechaty-puppet-wechat4u",
         "puppetToken": ""
     },

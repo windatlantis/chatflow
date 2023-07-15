@@ -152,6 +152,7 @@ class VikaBot {
   }
 
   async createRecord (datasheetId: string, records: ICreateRecordsReqParams) {
+    void await wait(1000)
     log.info('createRecord:', records)
     const datasheet = await this.vika.datasheet(datasheetId)
 
@@ -165,7 +166,7 @@ class VikaBot {
     } catch (err) {
       console.error('请求维格表写入失败：', err)
     }
-
+    void await wait(1000)
   }
 
   async addChatRecord (msg: { talker: () => any; to: () => any; type: () => any; text: () => any; room: () => any; id: any }, uploadedAttachments: any, msgType: any, text: string) {
