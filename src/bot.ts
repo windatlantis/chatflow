@@ -19,6 +19,7 @@ import XLSX from 'xlsx'
 import csv from 'fast-csv'
 import {
   VikaBot,
+  VikaBotConfigTypes,
   configData,
   sendMsg,
   sendNotice,
@@ -46,7 +47,7 @@ let sysConfig: any
 let chatdev: any = {}
 let job: any
 let jobs: any
-let vika: any
+let vika: VikaBot
 let socket: any = {}
 
 baseConfig['VIKA_TOKEN'] = baseConfig['VIKA_TOKEN'] || process.env['VIKA_TOKEN'] || ''
@@ -54,7 +55,7 @@ baseConfig['VIKA_SPACENAME'] = baseConfig['VIKA_SPACENAME'] || process.env['VIKA
 
 // log.info(baseConfig)
 
-const vikaConfig = {
+const vikaConfig:VikaBotConfigTypes = {
   spaceName: baseConfig['VIKA_SPACENAME'],
   token: baseConfig['VIKA_TOKEN'],
 }
@@ -94,6 +95,11 @@ function getNow () {
   return new Date().toLocaleString()
 }
 
+/**
+ * 检查配置
+ * @param configs 
+ * @returns 
+ */
 function checkConfig (configs: { [key: string]: any }) {
   const missingConfiguration = []
 
@@ -606,9 +612,10 @@ async function onError (err:any) {
   }
 }
 
-async function main (vika:any) {
-  await vika.init()
+async function main (vika: VikaBot) {
   // 初始化获取配置信息
+  await vika.init()
+  // 检查vika表与本地配置是否数量一致
   const initReady = await vika.checkInit('主程序载入系统配置成功，等待插件初始化...')
   if (!initReady) {
     return
@@ -617,6 +624,7 @@ async function main (vika:any) {
   // 获取系统配置信息
   sysConfig = await vika.getConfig()
   config.botConfig.bot = sysConfig
+  // 检查配置
   const configReady = checkConfig(sysConfig)
 
   // 配置齐全，启动机器人
@@ -646,8 +654,9 @@ async function main (vika:any) {
   }
 }
 
-// 检查维格表配置并启动
+// 检查本地json配置并启动
 if (vikaConfig.spaceName && vikaConfig.token) {
+  // 使用本地json配置vikabot
   vika = new VikaBot(vikaConfig)
   void main(vika)
 } else {

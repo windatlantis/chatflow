@@ -27,6 +27,7 @@ import { FileBox } from 'file-box'
 import type { Sheets, Field } from './lib/vikaModel/Model.js'
 import { sheets } from './lib/vikaModel/index.js'
 import { waitForMs as wait } from '../util/tool.js'
+import { type } from 'os'
 
 // import { sheets } from './lib/dataModel.js'
 
@@ -776,6 +777,11 @@ class VikaBot {
 
   }
 
+  /**
+   * 检查vika表与本地配置是否数量一致
+   * @param msg 
+   * @returns 
+   */
   async checkInit (msg: string) {
     this.spaceId = await this.getSpaceId()
     // console.log('空间ID:', this.spaceId)
@@ -813,7 +819,8 @@ class VikaBot {
       // log.info('待处理消息池长度：', that.msgStore.length||0);
       // that.msgStore = that.msgStore.concat(global.sentMessage)
       // global.sentMessage = []
-
+      
+      // 本地消息存储
       if (that.msgStore.length && that.messageSheet) {
         const end = that.msgStore.length < 10 ? that.msgStore.length : 10
         const records = that.msgStore.splice(0, end)
@@ -837,6 +844,10 @@ class VikaBot {
     return true
   }
 
+  /**
+   * 使用本地sheets数据创建vika表
+   * @returns 
+   */
   async init () {
 
     this.spaceId = await this.getSpaceId()
@@ -849,10 +860,12 @@ class VikaBot {
 
       await wait(1000)
 
+      // 读取各种配置
       for (const k in sheets) {
         // console.debug(this)
         const sheet = sheets[k as keyof Sheets]
         // console.log(k, sheet)
+        // tables与sheets的匹配检查，没有的再进行初始化
         if (sheet && !tables[sheet.name]) {
           const fields = sheet.fields
           const newFields: Field[] = []
@@ -921,7 +934,7 @@ class VikaBot {
           }
 
           // console.debug(newFields)
-
+          // 创建表
           await this.createDataSheet(k, sheet.name, newFields)
           await wait(200)
           const defaultRecords = sheet.defaultRecords
@@ -932,6 +945,7 @@ class VikaBot {
             for (let i = 0; i < count; i++) {
               const records = defaultRecords.splice(0, 10)
               console.log('写入：', records.length)
+              // 写入表，每次10行
               await this.createRecord(this[k as keyof VikaBot], records)
               await wait(200)
             }
@@ -966,5 +980,6 @@ class VikaBot {
 }
 
 export { VikaBot }
+export type { VikaBotConfigTypes }
 
 export default VikaBot
