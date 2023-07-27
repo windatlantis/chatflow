@@ -170,6 +170,13 @@ class VikaBot {
     void await wait(1000)
   }
 
+  /**
+   * 写入msgStore，最终存入vika
+   * @param msg 
+   * @param uploadedAttachments 
+   * @param msgType 
+   * @param text 
+   */
   async addChatRecord (msg: { talker: () => any; to: () => any; type: () => any; text: () => any; room: () => any; id: any }, uploadedAttachments: any, msgType: any, text: string) {
     // console.debug(msg)
     // console.debug(JSON.stringify(msg))
@@ -412,6 +419,10 @@ class VikaBot {
 
   }
 
+  /**
+   * 接收到消息
+   * @param message 
+   */
   async onMessage (message:Message) {
     try {
 

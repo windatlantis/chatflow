@@ -17,14 +17,20 @@ async function sendTextMessage (contact: Contact, text: string): Promise<boolean
   }
 }
 
+/**
+ * 通过excel群发通知
+ * @param bot 
+ * @param msg 
+ */
 async function sendNotice (bot:Wechaty, msg: Message) {
   log.info('sendNotice:', msg.talker().id)
   await delay(3000)
-  // 检测群消息
+  // 附件
   if (msg.type() === types.Message.Attachment) {
     const file = await msg.toFileBox()
     const fileType = file.name.split('.').pop()
 
+    // excel
     if (fileType === 'xlsx' || fileType === 'xls') {
       const buffer = await file.toBuffer()
       const workbook = XLSX.read(buffer, { type: 'buffer' })
@@ -69,6 +75,7 @@ async function sendNotice (bot:Wechaty, msg: Message) {
             }
           }
 
+          // 结果回写
           const updatedSheet = XLSX.utils.aoa_to_sheet(data)
           workbook.Sheets[sheetName] = updatedSheet
           const updatedBuffer = XLSX.write(workbook, {  bookType: 'xlsx', type: 'buffer' })

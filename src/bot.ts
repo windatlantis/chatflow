@@ -117,7 +117,7 @@ function checkConfig (configs: { [key: string]: any }) {
   return true
 }
 
-async function relpy (bot:Wechaty, vika:any, replyText:string, message:Message) {
+async function relpy (bot:Wechaty, vika:VikaBot, replyText:string, message:Message) {
   await message.say(replyText)
   vika.addRecord(await formatSentMessage(bot.currentUser, replyText, message.room() ? undefined : message.talker(), message.room()))
 }
@@ -413,6 +413,10 @@ function onLogout (user: Contact) {
   job.cancel()
 }
 
+/**
+ * 接收到消息
+ * @param message 
+ */
 async function onMessage (message: Message) {
   // log.info('onMessage', JSON.stringify(message))
   await vika.onMessage(message)
@@ -437,9 +441,11 @@ async function onMessage (message: Message) {
   const isSelfMsg = message.self()
   log.info('keyWord is:', keyWord)
   if (isSelfMsg) {
+    // 通过excel群发通知
     await sendNotice(bot, message)
   }
 
+  // 只支持bot自己给自己发指令，避免混乱
   let replyText: string = ''
   if (isSelfMsg && (text === '#指令列表' || text === '#帮助')) {
     replyText = `操作指令说明：\n
@@ -525,6 +531,7 @@ async function onMessage (message: Message) {
 
   try {
 
+    // 群消息
     if (room && roomId && !isSelfMsg) {
 
       // 智能问答开启时执行
@@ -568,6 +575,7 @@ async function onMessage (message: Message) {
 
     }
 
+    // 私聊消息
     if ((!room || !room.id) && !isSelfMsg) {
       // 智能问答开启时执行
       if (sysConfig.WX_OPENAI_ONOFF && ((text.indexOf(keyWord) !== -1 && sysConfig.AT_AHEAD) || !sysConfig.AT_AHEAD)) {
