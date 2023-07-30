@@ -1,3 +1,4 @@
+import { type } from 'os';
 /*
 修改config.json配置文件，参考一下说明修改
 {
@@ -10,12 +11,22 @@
 }
 */
 import fs from 'fs'
-let config:any = fs.readFileSync('src/config.json', 'utf8')
-config = JSON.parse(config)
-type Configs = {
+
+type KeyObjConfigs = {
   [key: string]: any;
 }
-// 配置文件，所有配置必须齐全，补充空白配置项，其他配置项可按需要修改
-const baseConfig:Configs = config.baseConfig
 
+type ConfigJson = {
+  baseConfig: KeyObjConfigs,
+  botConfig: KeyObjConfigs,
+  contactConfig: KeyObjConfigs,
+  roomConfig: KeyObjConfigs,
+}
+
+let config:ConfigJson = JSON.parse(fs.readFileSync('src/config.json', 'utf8')) as ConfigJson
+
+// 配置文件，所有配置必须齐全，补充空白配置项，其他配置项可按需要修改
+const baseConfig:KeyObjConfigs = config.baseConfig
+
+export type { ConfigJson, KeyObjConfigs}
 export { baseConfig, config }

@@ -37,6 +37,7 @@ import {
 } from './util/tool.js'
 import schedule from 'node-schedule'
 import { db } from './db/tables.js'
+import { addStockTask, getStockPlan } from './handlers/stock_task.js'
 
 log.info('db:', db)
 log.info('config:', JSON.stringify(config))
@@ -53,13 +54,13 @@ let socket: any = {}
 baseConfig['VIKA_TOKEN'] = baseConfig['VIKA_TOKEN'] || process.env['VIKA_TOKEN'] || ''
 baseConfig['VIKA_SPACENAME'] = baseConfig['VIKA_SPACENAME'] || process.env['VIKA_SPACENAME'] || ''
 
-// log.info(baseConfig)
+log.info(JSON.stringify(baseConfig))
 
 const vikaConfig:VikaBotConfigTypes = {
   spaceName: baseConfig['VIKA_SPACENAME'],
   token: baseConfig['VIKA_TOKEN'],
 }
-// log.info(vikaConfig)
+log.info(JSON.stringify(vikaConfig))
 
 function getBot (sysConfig: any) {
   const ops:any = {
@@ -69,8 +70,6 @@ function getBot (sysConfig: any) {
       token: sysConfig.puppetToken || 'null',
     },
   }
-
-  log.info(ops)
 
   if (sysConfig.puppetName === 'wechaty-puppet-service') {
     process.env['WECHATY_PUPPET_SERVICE_NO_TLS_INSECURE_CLIENT'] = 'true'
@@ -85,7 +84,7 @@ function getBot (sysConfig: any) {
     ops.puppetOptions.uos = true
   }
 
-  log.info('bot ops:', JSON.stringify(getBot))
+  log.info('bot ops:', JSON.stringify(ops))
 
   const bot = WechatyBuilder.build(ops)
   return bot
@@ -111,7 +110,7 @@ function checkConfig (configs: { [key: string]: any }) {
 
   if (missingConfiguration.length > 0) {
     log.error('\n======================================\n\n', `错误提示：\n缺少${missingConfiguration.join()}配置参数,请检查环境变量表\n\n======================================`)
-    log.info('bot configs:', configs)
+    log.info('bot configs:', JSON.stringify(configs))
     return true
   }
   return true
@@ -193,7 +192,12 @@ async function exportContactsAndRoomsToXLSX () {
   return FileBox.fromFile(fileName)
 }
 
-async function updateJobs (bot: Wechaty, vika:any) {
+/**
+ * 启动定时任务
+ * @param bot 
+ * @param vika 
+ */
+async function updateJobs (bot: Wechaty, vika:VikaBot) {
   try {
     const tasks = await vika.getTimedTask()
     schedule.gracefulShutdown()
@@ -368,6 +372,7 @@ async function onLogin (user: Contact) {
 
   // 启动用户定时通知提醒任务
   await updateJobs(bot, vika)
+  await addStockTask(bot)
   log.info('================================================\n\n登录启动成功，程序准备就绪\n\n================================================\n')
 }
 
@@ -456,6 +461,11 @@ async function onMessage (message: Message) {
     #下载通知模板 下载通知模板`
 
     await relpy(bot, vika, replyText, message)
+  }
+
+  if (isSelfMsg && (text === '#交易计划' )) {
+    const planDetail = await getStockPlan()
+    await message.say(planDetail)
   }
 
   if (isSelfMsg && text === '#更新配置') {
@@ -631,7 +641,7 @@ async function main (vika: VikaBot) {
 
   // 获取系统配置信息
   sysConfig = await vika.getConfig()
-  config.botConfig.bot = sysConfig
+  config.botConfig['bot'] = sysConfig
   // 检查配置
   const configReady = checkConfig(sysConfig)
 

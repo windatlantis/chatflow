@@ -867,7 +867,7 @@ class VikaBot {
     if (this.spaceId) {
 
       const tables = await this.getNodesList()
-      // console.log(tables)
+      console.log(tables)
 
       await wait(1000)
 
