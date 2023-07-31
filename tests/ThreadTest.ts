@@ -1,14 +1,18 @@
 import schedule from 'node-schedule'
-
+import cronParse from 'cron-parser'
 
 const scheduleCronstyle = ()=>{
-    schedule.scheduleJob('test', '2 0/1 * * * *', () => {
+    console.log('scheduleCronstyle')
+    schedule.scheduleJob('test', '0/30 * * ? * 1-5', () => {
         console.log(new Date() + ' is run')
     })
 }
 scheduleCronstyle()
-for (let i in schedule.scheduledJobs) {
-    console.error("任务名称："+i);
+
+
+const interval = cronParse.parseExpression('0/30 * * ? * 1-5')
+for(let i=0;i<10;i++) {
+    console.log('cronDate:', interval.next().toString())
 }
 
 

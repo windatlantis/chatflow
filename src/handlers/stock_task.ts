@@ -7,14 +7,14 @@ import waitForMs from '../util/tool.js'
 
 const addStockTask = async (bot:Wechaty) => {
     console.log('enter addStockTask')
-    schedule.scheduleJob('StockTask', '0 0 8 ? * 2,3,4,5,6', async () => {
+    schedule.scheduleJob('StockTask', '0 0 8 ? * 1-5', async () => {
     // schedule.scheduleJob('StockTask', '0 0/1 * * * *', async () => {
         console.log('StockTask running')
         const planDetail = await getStockPlan()
         const room = await bot.Room.find({topic: '我还能卖你个生瓜蛋子'})
         if (room) {
-            await room.say('测试一下定时')
-            await waitForMs(200)
+            // await room.say('测试一下定时')
+            // await waitForMs(200)
             await room.say(planDetail)
             await waitForMs(200)
         }
