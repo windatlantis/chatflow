@@ -3,6 +3,7 @@ import schedule from 'node-schedule'
 import axios from 'axios'
 import type { Wechaty } from 'wechaty'
 import waitForMs from '../util/tool.js'
+import qs from 'qs'
 
 
 const addStockTask = async (bot:Wechaty) => {
@@ -37,7 +38,13 @@ async function getStockPlan() {
     }
 
     try {
-        const response = await axios.post(apiUrl, payload, { headers : headers })
+        const response = await axios.post(apiUrl, payload, 
+            { 
+                headers : headers, 
+                transformRequest: [function (data) {
+                    return qs.stringify(data)
+                }] 
+            })
         console.info('获取模拟交易：', JSON.stringify(response.data))
         if (response && response.data) {
             if (response.data.statusCode == 200) {
