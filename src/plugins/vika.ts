@@ -27,7 +27,7 @@ import { FileBox } from 'file-box'
 import type { Sheets, Field } from './lib/vikaModel/Model.js'
 import { sheets } from './lib/vikaModel/index.js'
 import { waitForMs as wait } from '../util/tool.js'
-import { type } from 'os'
+// import type { type } from 'os'
 
 // import { sheets } from './lib/dataModel.js'
 

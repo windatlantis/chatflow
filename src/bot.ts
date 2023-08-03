@@ -372,7 +372,7 @@ async function onLogin (user: Contact) {
 
   // 启动用户定时通知提醒任务
   await updateJobs(bot, vika)
-  await addStockTask(bot)
+  await addStockTask(bot, vika)
   log.info('================================================\n\n登录启动成功，程序准备就绪\n\n================================================\n')
 }
 
@@ -424,7 +424,7 @@ function onLogout (user: Contact) {
  */
 async function onMessage (message: Message) {
   // log.info('onMessage', JSON.stringify(message))
-  await vika.onMessage(message)
+  // await vika.onMessage(message)
   const curDate = new Date().toLocaleString()
 
   // MQTT上报
@@ -454,18 +454,21 @@ async function onMessage (message: Message) {
   let replyText: string = ''
   if (isSelfMsg && (text === '#指令列表' || text === '#帮助')) {
     replyText = `操作指令说明：\n
+    #交易计划 获取交易计划
+    ------------
     #更新配置 更新全部配置
-    #更新提醒 更新定时提醒任务
-    #更新通讯录 更新维格表通信录
-    #下载通讯录 下载通讯录xlsx表
-    #下载通知模板 下载通知模板`
+    #更新提醒 更新定时提醒任务`
+    // #更新通讯录 更新维格表通信录
+    // #下载通讯录 下载通讯录xlsx表
+    // #下载通知模板 下载通知模板`
 
     await relpy(bot, vika, replyText, message)
   }
 
   if (isSelfMsg && (text === '#交易计划' )) {
     const planDetail = await getStockPlan()
-    await message.say(planDetail)
+    // await message.say(planDetail)
+    await relpy(bot, vika, planDetail, message)
   }
 
   if (isSelfMsg && text === '#更新配置') {
