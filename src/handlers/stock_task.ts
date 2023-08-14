@@ -60,14 +60,14 @@ async function getStockPlan() {
                     let plans:string[] = []
                     if (strategy.planned_orders.length > 0) {
                         for (const order of strategy.planned_orders) {
-                            plans.push('* ' + order.dt + ' ' + order.direction + ' ' + order.sid + order.name + ' ' + order.amount_after_adjust + '股')
+                            plans.push('* ' + order.dt + ' ' + order.direction + ' ' + order.sid + order.name)
                         }
                         strategys.push(strategy.strategy_name + ': \n' + plans.join('\n'))
                     }
                 }
-                return '模拟交易：\n\n' + strategys.join('\n\n') 
+                return '投资纪律!!!\n严格按照投资时间买入卖出!!\n勿追高(3%), 及时止损(-5%)!!\n\n模拟交易:\n\n' + strategys.join('\n\n') 
             } else {
-                return '获取模拟交易失败：' + response.data.info.FailureReason
+                return '获取模拟交易失败:' + response.data.info.FailureReason
             }
         }
         return '获取模拟交易无返回值'
